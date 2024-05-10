@@ -44,9 +44,9 @@ class AppTheme {
   static Color darkTextColor = const Color.fromARGB(255, 240, 231, 231);
   static Color lightTextColor = const Color.fromARGB(255, 21, 21, 21);
 
-  static IconThemeData get _iconTheme {
+  /*static IconThemeData get _iconTheme {
     return const IconThemeData(color: Colors.black);
-  }
+  }*/
 
   static ThemeData get lightTheme {
     return ThemeData(

@@ -152,7 +152,7 @@ formatDay(DateTime date) {
 }
 
 stringDate({DateTime? date}) {
-  var formatter;
+  String? formatter;
   if (date != null) {
     // formatter =  DateFormat('yyyy-MM-dd');
     formatter =  DateFormat.yMMMd().format(date.add(const Duration(hours: 1)));
@@ -161,7 +161,7 @@ stringDate({DateTime? date}) {
 }
 
 stringTime({DateTime? date}) {
-  var formatter;
+  String? formatter;
   if (date != null) {
     // formatter =  DateFormat('yyyy-MM-dd');
     formatter =  DateFormat.jm().format(date.add(const Duration(hours: 1)));
