@@ -31,7 +31,7 @@ class AppTheme {
     900: Color(0xFF101828)
   });
 
-  static Color primary = HexColor("#0DCDAA");
+  static Color primary = primarySwatch.shade400;
   static Color textColor = HexColor("#333333");
   static Color disabledColor = primaryGrey.shade200;
   static Color enabledColor = const Color(0xFFD0D4DD);
