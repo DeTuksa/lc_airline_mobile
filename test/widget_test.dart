@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lc_airline/core/presentation/constants/app_assets.dart';
 import 'package:lc_airline/features/booking/view/booking_screen.dart';
+import 'package:lc_airline/features/booking/view/flight_details_screen.dart';
 import 'package:lc_airline/features/booking/view/widgets/flight_card.dart';
 
 void main() {
@@ -44,5 +45,43 @@ void main() {
 
     // Verify if three FlightCard widgets are rendered
     expect(find.byType(FlightCard), findsNWidgets(3));
+  });
+
+  testWidgets('FlightDetailsScreen widget test', (WidgetTester tester) async {
+    await tester.pumpWidget(const MaterialApp(
+      home: FlightDetailsScreen(),
+    ));
+
+    // Verify if the FlightDetailsScreen widget is rendered
+    expect(find.byType(FlightDetailsScreen), findsOneWidget);
+
+    // Verify if the Scaffold widget is rendered
+    expect(find.byType(Scaffold), findsOneWidget);
+
+    // Verify if the SingleChildScrollView widget is rendered
+    expect(find.byType(SingleChildScrollView), findsOneWidget);
+
+    // Verify if the Container with flight details is rendered
+    expect(find.byWidgetPredicate((widget) =>
+    widget is Container &&
+        widget.decoration is BoxDecoration &&
+        widget.child is Column &&
+        (widget.child as Column).children.length == 2), findsOneWidget);
+
+    // Verify if the Container with flight options is rendered
+    expect(find.byWidgetPredicate((widget) =>
+    widget is Container &&
+        widget.decoration is BoxDecoration &&
+        widget.child is Column &&
+        (widget.child as Column).children.length == 2), findsOneWidget);
+
+    // Verify if the Text widget with flight options title is rendered
+    expect(find.text("Flight Options"), findsOneWidget);
+
+    // Verify if the IconButtons for adding and removing passengers are rendered
+    expect(find.byIcon(Icons.add), findsOneWidget);
+    expect(find.byIcon(Icons.remove), findsOneWidget);
+
+    expect(find.byType(ElevatedButton), findsOneWidget);
   });
 }
