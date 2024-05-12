@@ -5,9 +5,12 @@ import 'package:lc_airline/core/presentation/constants/spacer.dart';
 import 'package:lc_airline/core/presentation/helpers/custom_functions.dart';
 import 'package:lc_airline/core/presentation/themes/app_themes.dart';
 import 'package:lc_airline/core/presentation/widgets/buttons/app_button.dart';
+import 'package:lc_airline/features/booking/infrastructure/index.dart' as pc;
 
 class FlightDetailsScreen extends StatefulWidget {
-  const FlightDetailsScreen({super.key});
+
+  final pc.Performance performance;
+  const FlightDetailsScreen({super.key, required this.performance});
 
   @override
   State<FlightDetailsScreen> createState() => _FlightDetailsScreenState();
@@ -74,7 +77,7 @@ class _FlightDetailsScreenState extends State<FlightDetailsScreen> {
                       children: [
                         AppSpacer.h16,
                         Text(
-                          "Boeing 737 from London to Madrid",
+                          "${widget.performance.from} to ${widget.performance.to}",
                           style: context.theme.textTheme.headlineSmall?.copyWith(
                               fontWeight: FontWeight.w600,
                               fontSize: 20
@@ -138,7 +141,7 @@ class _FlightDetailsScreenState extends State<FlightDetailsScreen> {
                             ),
                             AppSpacer.w16,
                             Text(
-                              stringDate(date: DateTime.now()),
+                              stringDate(date: widget.performance.departure),
                               style: context.theme.textTheme.bodyLarge,
                             ),
                           ],

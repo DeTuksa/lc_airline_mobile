@@ -1,7 +1,8 @@
 import 'package:go_router/go_router.dart';
 import 'package:lc_airline/core/presentation/routes/app_routes.dart';
-import 'package:lc_airline/features/booking/view/booking_screen.dart';
-import 'package:lc_airline/features/booking/view/flight_details_screen.dart';
+import 'package:lc_airline/features/booking/infrastructure/index.dart';
+import 'package:lc_airline/features/booking/presentation/booking_screen.dart';
+import 'package:lc_airline/features/booking/presentation/flight_details_screen.dart';
 
 class AppPages {
   AppPages._();
@@ -15,6 +16,9 @@ class AppPages {
     GoRoute(
         name: Paths.flightDetailsScreen,
         path: Paths.flightDetailsScreen,
-        builder: (context, state) => const FlightDetailsScreen())
+        builder: (context, state) {
+          Performance performance = state.extra as Performance;
+          return FlightDetailsScreen(performance: performance,);
+        })
   ]);
 }
