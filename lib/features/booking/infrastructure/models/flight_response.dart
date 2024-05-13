@@ -217,3 +217,95 @@ class EnumValues<T> {
     return reverseMap;
   }
 }
+
+BookingResponse bookingResponseFromJson(String str) => BookingResponse.fromJson(json.decode(str));
+
+String bookingResponseToJson(BookingResponse data) => json.encode(data.toJson());
+
+class BookingResponse {
+  int id;
+  int userId;
+  String seats;
+  int noOfTickets;
+  int performanceId;
+  DateTime createdAt;
+  DateTime updatedAt;
+  Performance performance;
+  User user;
+
+  BookingResponse({
+    required this.id,
+    required this.userId,
+    required this.seats,
+    required this.noOfTickets,
+    required this.performanceId,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.performance,
+    required this.user,
+  });
+
+  factory BookingResponse.fromJson(Map<String, dynamic> json) => BookingResponse(
+    id: json["id"],
+    userId: json["userId"],
+    seats: json["seats"],
+    noOfTickets: json["noOfTickets"],
+    performanceId: json["performanceId"],
+    createdAt: DateTime.parse(json["createdAt"]),
+    updatedAt: DateTime.parse(json["updatedAt"]),
+    performance: Performance.fromJson(json["performance"]),
+    user: User.fromJson(json["user"]),
+  );
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "userId": userId,
+    "seats": seats,
+    "noOfTickets": noOfTickets,
+    "performanceId": performanceId,
+    "createdAt": createdAt.toIso8601String(),
+    "updatedAt": updatedAt.toIso8601String(),
+    "performance": performance.toJson(),
+    "user": user.toJson(),
+  };
+}
+
+class User {
+  int id;
+  String email;
+  String password;
+  String firstName;
+  String lastName;
+  DateTime createdAt;
+  DateTime updatedAt;
+
+  User({
+    required this.id,
+    required this.email,
+    required this.password,
+    required this.firstName,
+    required this.lastName,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  factory User.fromJson(Map<String, dynamic> json) => User(
+    id: json["id"],
+    email: json["email"],
+    password: json["password"],
+    firstName: json["firstName"],
+    lastName: json["lastName"],
+    createdAt: DateTime.parse(json["createdAt"]),
+    updatedAt: DateTime.parse(json["updatedAt"]),
+  );
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "email": email,
+    "password": password,
+    "firstName": firstName,
+    "lastName": lastName,
+    "createdAt": createdAt.toIso8601String(),
+    "updatedAt": updatedAt.toIso8601String(),
+  };
+}
