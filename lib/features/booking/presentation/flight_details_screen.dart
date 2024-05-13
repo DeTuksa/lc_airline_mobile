@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lc_airline/core/extensions/context_extensions.dart';
 import 'package:lc_airline/core/presentation/constants/app_assets.dart';
 import 'package:lc_airline/core/presentation/constants/spacer.dart';
 import 'package:lc_airline/core/presentation/helpers/custom_functions.dart';
 import 'package:lc_airline/core/presentation/themes/app_themes.dart';
 import 'package:lc_airline/core/presentation/widgets/buttons/app_button.dart';
+import 'package:lc_airline/core/presentation/widgets/custom_text_field.dart';
 import 'package:lc_airline/core/storage/cache_data_impl.dart';
+import 'package:lc_airline/features/auth/domain/auth_cubit.dart';
+import 'package:lc_airline/features/auth/infrastructure/model/user_body.dart';
 import 'package:lc_airline/features/booking/infrastructure/index.dart' as pc;
 
 class FlightDetailsScreen extends StatefulWidget {
-
   final pc.Performance performance;
   const FlightDetailsScreen({super.key, required this.performance});
 
@@ -18,12 +22,15 @@ class FlightDetailsScreen extends StatefulWidget {
 }
 
 class _FlightDetailsScreenState extends State<FlightDetailsScreen> {
-
   final passengerCount = ValueNotifier<int>(1);
   final scaffoldKey = GlobalKey();
 
   TextEditingController emailCtrl = TextEditingController();
   TextEditingController passCtrl = TextEditingController();
+
+  final authCubit = AuthCubit();
+
+  bool loginLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -43,10 +50,8 @@ class _FlightDetailsScreenState extends State<FlightDetailsScreen> {
               decoration: const BoxDecoration(
                   borderRadius: BorderRadius.only(
                       bottomLeft: Radius.circular(16),
-                      bottomRight: Radius.circular(16)
-                  ),
-                color: Colors.white
-              ),
+                      bottomRight: Radius.circular(16)),
+                  color: Colors.white),
               child: Column(
                 children: [
                   Container(
@@ -55,21 +60,16 @@ class _FlightDetailsScreenState extends State<FlightDetailsScreen> {
                     decoration: BoxDecoration(
                         borderRadius: const BorderRadius.only(
                             bottomLeft: Radius.circular(10),
-                            bottomRight: Radius.circular(10)
-                        ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppTheme.primaryGrey.shade50
-                        )
-                      ]
-                    ),
+                            bottomRight: Radius.circular(10)),
+                        boxShadow: [
+                          BoxShadow(color: AppTheme.primaryGrey.shade50)
+                        ]),
                     child: ClipRRect(
                       borderRadius: const BorderRadius.only(
                           bottomRight: Radius.circular(10),
-                          bottomLeft: Radius.circular(10)
-                      ),
+                          bottomLeft: Radius.circular(10)),
                       child: Image.asset(
-                          AppAssets.plane,
+                        AppAssets.plane,
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -82,16 +82,15 @@ class _FlightDetailsScreenState extends State<FlightDetailsScreen> {
                         AppSpacer.h16,
                         Text(
                           "${widget.performance.from} to ${widget.performance.to}",
-                          style: context.theme.textTheme.headlineSmall?.copyWith(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 20
-                          ),
+                          style: context.theme.textTheme.headlineSmall
+                              ?.copyWith(
+                                  fontWeight: FontWeight.w600, fontSize: 20),
                         ),
                         AppSpacer.h20,
                         Text(
                           "An exciting flight in a Cessna 172 sightseeing airplane over the neighborhood"
-                              " of the airfield. The flight includes performance of simple aerobatics "
-                              "figures and short-term weightlessness mode.",
+                          " of the airfield. The flight includes performance of simple aerobatics "
+                          "figures and short-term weightlessness mode.",
                           style: context.theme.textTheme.bodyLarge,
                         ),
                       ],
@@ -103,9 +102,7 @@ class _FlightDetailsScreenState extends State<FlightDetailsScreen> {
             AppSpacer.h20,
             Container(
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16)
-              ),
+                  color: Colors.white, borderRadius: BorderRadius.circular(16)),
               width: context.mediaQuery.size.width,
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -121,15 +118,13 @@ class _FlightDetailsScreenState extends State<FlightDetailsScreen> {
                   AppSpacer.h16,
                   Container(
                     decoration: BoxDecoration(
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppTheme.primaryGrey.shade200,
-                          blurRadius: 10
-                        ),
-                      ],
-                      borderRadius: BorderRadius.circular(16.0),
-                      color: Colors.white
-                    ),
+                        boxShadow: [
+                          BoxShadow(
+                              color: AppTheme.primaryGrey.shade200,
+                              blurRadius: 10),
+                        ],
+                        borderRadius: BorderRadius.circular(16.0),
+                        color: Colors.white),
                     padding: const EdgeInsets.all(16.0),
                     width: context.mediaQuery.size.width,
                     child: Column(
@@ -177,14 +172,18 @@ class _FlightDetailsScreenState extends State<FlightDetailsScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     GestureDetector(
-                                      onTap: passengerCount.value > 1 ? () {
-                                        passengerCount.value = passengerCount.value - 1;
-                                      } : null,
+                                      onTap: passengerCount.value > 1
+                                          ? () {
+                                              passengerCount.value =
+                                                  passengerCount.value - 1;
+                                            }
+                                          : null,
                                       child: Container(
                                         decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(8),
-                                            color: AppTheme.primaryGrey.shade100
-                                        ),
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                            color:
+                                                AppTheme.primaryGrey.shade100),
                                         padding: const EdgeInsets.all(8.0),
                                         child: const Icon(
                                           Icons.remove,
@@ -199,23 +198,26 @@ class _FlightDetailsScreenState extends State<FlightDetailsScreen> {
                                     ),
                                     AppSpacer.w5,
                                     GestureDetector(
-                                      onTap: passengerCount.value < 6 ? () {
-                                        passengerCount.value = passengerCount.value + 1;
-                                      } : () {
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          SnackBar(
-                                            content: const Text(
-                                              "Can't book for more than 6 passengers at once"
-                                            ),
-                                            backgroundColor: AppTheme.primaryGrey.shade600,
-                                          )
-                                        );
-                                      },
+                                      onTap: passengerCount.value < 6
+                                          ? () {
+                                              passengerCount.value =
+                                                  passengerCount.value + 1;
+                                            }
+                                          : () {
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(SnackBar(
+                                                content: const Text(
+                                                    "Can't book for more than 6 passengers at once"),
+                                                backgroundColor: AppTheme
+                                                    .primaryGrey.shade600,
+                                              ));
+                                            },
                                       child: Container(
                                         decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(8),
-                                            color: AppTheme.primaryGrey.shade100
-                                        ),
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                            color:
+                                                AppTheme.primaryGrey.shade100),
                                         padding: const EdgeInsets.all(8.0),
                                         child: const Icon(
                                           Icons.add,
@@ -242,7 +244,7 @@ class _FlightDetailsScreenState extends State<FlightDetailsScreen> {
                 text: "Purchase Ticket(s)",
                 onPressed: () async {
                   var user = await CacheDataImpl().getUser();
-                  if(user == null) {
+                  if (user == null) {
                     _loginModal();
                   } else {}
                 },
@@ -257,41 +259,85 @@ class _FlightDetailsScreenState extends State<FlightDetailsScreen> {
   _loginModal() {
     showModalBottomSheet(
         context: context,
+        isScrollControlled: true,
         builder: (context) {
-          return SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                AppSpacer.h20,
-                Text(
-                  "Login",
-                  style: context.theme.textTheme.headlineSmall,
-                ),
-                AppSpacer.h24,
-                TextFormField(
-                  controller: emailCtrl,
-                ),
-                AppSpacer.h16,
-                TextFormField(
-                  controller: passCtrl,
-                ),
-                AppSpacer.h40,
-                AppButton(
-                  text: 'Login',
-                  onPressed: () {},
-                )
-              ],
+          return Padding(
+            padding: EdgeInsets.fromLTRB(
+                24, 20, 24, MediaQuery.of(context).viewInsets.bottom),
+            child: StatefulBuilder(
+              builder: (context, _) {
+                return BlocListener<AuthCubit, AuthState>(
+                  bloc: authCubit,
+                  listener: (context, state) {
+                    if(state is AuthLoading) {
+                      setState(() {
+                        loginLoading = true;
+                      });
+                    }
+                    if (state is AuthSuccessful) {
+                      setState(() {
+                        loginLoading = false;
+                      });
+                    }
+                    if (state is AuthError) {
+                      setState(() {
+                        loginLoading = false;
+                      });
+                    }
+                  },
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      AppSpacer.h20,
+                      Text(
+                        "Login",
+                        style: context.theme.textTheme.headlineSmall,
+                      ),
+                      AppSpacer.h24,
+                      TextFormField(
+                        controller: emailCtrl,
+                        keyboardType: TextInputType.emailAddress,
+                      ),
+                      AppSpacer.h16,
+                      TextFormField(
+                        controller: passCtrl,
+                        obscureText: true,
+                      ),
+                      AppSpacer.h40,
+                      AppButton(
+                        text: 'Login',
+                        onPressed: () async {
+                          bool login = await authCubit.login(
+                              payload: UserBody(
+                                  email: emailCtrl.text.trim(),
+                                  password: passCtrl.text.trim()));
+                          if (login) {
+                            context.pop();
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: const Text("Login successful"),
+                              backgroundColor: AppTheme.primaryGrey.shade600,
+                            ));
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: const Text("Incorrect credentials"),
+                              backgroundColor: Colors.red.shade400,
+                            ));
+                          }
+                        },
+                        isLoading: loginLoading,
+                      ),
+                      AppSpacer.h24
+                    ],
+                  ),
+                );
+              }
             ),
           );
         },
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(16),
-          topRight: Radius.circular(16)
-        )
-      )
-    );
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(16), topRight: Radius.circular(16))),
+        useSafeArea: true);
   }
 }
