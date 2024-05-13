@@ -5,6 +5,7 @@ import 'package:lc_airline/core/presentation/constants/spacer.dart';
 import 'package:lc_airline/core/presentation/helpers/custom_functions.dart';
 import 'package:lc_airline/core/presentation/themes/app_themes.dart';
 import 'package:lc_airline/core/presentation/widgets/buttons/app_button.dart';
+import 'package:lc_airline/core/storage/cache_data_impl.dart';
 import 'package:lc_airline/features/booking/infrastructure/index.dart' as pc;
 
 class FlightDetailsScreen extends StatefulWidget {
@@ -20,6 +21,9 @@ class _FlightDetailsScreenState extends State<FlightDetailsScreen> {
 
   final passengerCount = ValueNotifier<int>(1);
   final scaffoldKey = GlobalKey();
+
+  TextEditingController emailCtrl = TextEditingController();
+  TextEditingController passCtrl = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -236,12 +240,58 @@ class _FlightDetailsScreenState extends State<FlightDetailsScreen> {
               padding: const EdgeInsets.all(20.0),
               child: AppButton(
                 text: "Purchase Ticket(s)",
-                onPressed: () {},
+                onPressed: () async {
+                  var user = await CacheDataImpl().getUser();
+                  if(user == null) {
+                    _loginModal();
+                  } else {}
+                },
               ),
             )
           ],
         ),
       ),
+    );
+  }
+
+  _loginModal() {
+    showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AppSpacer.h20,
+                Text(
+                  "Login",
+                  style: context.theme.textTheme.headlineSmall,
+                ),
+                AppSpacer.h24,
+                TextFormField(
+                  controller: emailCtrl,
+                ),
+                AppSpacer.h16,
+                TextFormField(
+                  controller: passCtrl,
+                ),
+                AppSpacer.h40,
+                AppButton(
+                  text: 'Login',
+                  onPressed: () {},
+                )
+              ],
+            ),
+          );
+        },
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(16),
+          topRight: Radius.circular(16)
+        )
+      )
     );
   }
 }
